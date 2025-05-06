@@ -1,0 +1,3 @@
+"0",""
+"0","# Step 3: Add WLS regression line (from Part C)"
+"0","abline(model_wls, col = ""red"", lty = 2, lwd = 2)"

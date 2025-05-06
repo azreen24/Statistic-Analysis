@@ -1,0 +1,7 @@
+"0","# Load library"
+"0","library(ggplot2)"
+"0",""
+"0","# Load dataset"
+"0","data <- read.csv(""hw04pr02.csv"")"
+"0",""
+"0","head(data)"

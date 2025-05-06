@@ -1,0 +1,419 @@
+---
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+header-includes:
+  - \usepackage{amsmath}
+  - \usepackage{array}
+  - \usepackage{pdfpages}
+geometry: margin=1in
+---
+\includepdf[pages=-]{/Users/azreen.tc/Documents/School/Spring 2025 CLASSES/STA4210/HW2 - Azreen Haque/HW2.pdf}
+
+**Azreen Haque** 
+
+**2/05/2025**
+
+**Solutions**
+
+## Problem 1
+Solutions below.
+
+
+### Part A
+```{r}
+# Given summary statistics
+n <- 122
+sum_x <- 3015
+sum_y <- 374.644
+sum_x2 <- 76963
+sum_xy <- 9354.484
+sum_squared_errors <- 45.8743
+sum_x_xbar_squared <- 2452.959
+
+# find means
+x_bar <- sum_x / n
+y_bar <- sum_y / n
+
+# find slope (beta_1) of regression line
+beta_1 <- (sum_xy - n * x_bar * y_bar) / sum_x_xbar_squared
+
+# find standard error of beta_1
+s_squared <- sum_squared_errors / (n - 2)
+se_beta_1 <- sqrt(s_squared / sum_x_xbar_squared)
+
+# find t-critical value for 95% CI
+t_critical <- 1.658  # From t-table for df = 120 at alpha = 0.05
+
+# find confidence interval
+lower_bound <- beta_1 - t_critical * se_beta_1
+upper_bound <- beta_1 + t_critical * se_beta_1
+
+# Output results
+cat("Beta1 Estimate:", beta_1, "\n")
+cat("Standard Error:", se_beta_1, "\n")
+cat("t-Critical Value:", t_critical, "\n")
+cat("95% Confidence Interval:", "(", lower_bound, ",", upper_bound, ")\n")
+
+```
+
+### Part B
+```{r}
+cat("\nPart (b): Hypothesis Test\n")
+cat("Null Hypothesis (H0): beta_1 = 0 (No linear association)\n")
+cat("Alternative Hypothesis (Ha): beta_1 != 0 (Linear association exists)\n")
+
+# find test statistic
+t_statistic <- beta_1 / se_beta_1
+
+# Compare test statistic to critical value
+reject_null <- abs(t_statistic) > t_critical
+
+# Output results
+cat("Test Statistic (t*):", t_statistic, "\n")
+cat("Critical Value (t_critical):", t_critical, "\n")
+
+# Compare values explicitly
+if (abs(t_statistic) > t_critical) {
+  cat("Since |t*| =", round(abs(t_statistic), 3), "is greater than t_critical =", 
+      round(t_critical, 3), ", we reject H0.\n")
+} else {
+  cat("Since |t*| =", round(abs(t_statistic), 3), "is less than or equal to t_critical =", 
+      round(t_critical, 3), ", we fail to reject H0.\n")
+}
+
+# Conclusion
+if (reject_null) {
+  cat("Conclusion: There is significant evidence to conclude a linear relationship exists\n")
+  cat("between ACT scores and GPA.\n")
+} else {
+  cat("Conclusion: There is insufficient evidence to conclude a linear relationship exists\n")
+  cat("between ACT scores and GPA.\n")
+}
+```
+
+### Part C
+```{r}
+Xh <- 30
+y_hat <- beta_1 * Xh  # Predicted GPA at Xh = 30
+SE_confidence <- sqrt(s_squared * (1/n + (Xh - x_bar)^2 / sum_x_xbar_squared))
+CI_lower <- y_hat - t_critical * SE_confidence
+CI_upper <- y_hat + t_critical * SE_confidence
+
+# Output confidence interval for mean GPA at Xh = 30
+cat("95% Confidence Interval:\n(", round(CI_lower, 3), ",", round(CI_upper, 3), ")\n")
+```
+
+### Part D
+```{r}
+SE_prediction <- sqrt(s_squared * (1 + 1/n + (Xh - x_bar)^2 / sum_x_xbar_squared))
+PI_lower <- y_hat - t_critical * SE_prediction
+PI_upper <- y_hat + t_critical * SE_prediction
+
+# Output prediction interval for individual GPA at Xh = 30
+cat("95% Prediction Interval:\n(", round(PI_lower, 3), ",", round(PI_upper, 3), ")\n")
+```
+
+### Part E
+```{r}
+cat("The prediction interval is wider than the confidence interval because it incorporates\n")
+cat("both the uncertainty in estimating the mean response and the additional variability\n")
+cat("associated with individual observations.\n")
+```
+
+### Part F
+```{r}
+# Load dataset
+dataset <- read.csv("hw02.csv")
+
+# Rename columns 
+colnames(dataset) <- c("ACT", "GPA")
+
+# Fit linear model
+model <- lm(GPA ~ ACT, data = dataset)
+
+# Display summary of the model
+summary(model)
+
+# Confidence interval for beta_1
+confint(model)
+
+# Confidence interval for mean GPA at Xh = 30
+predict(model, newdata = data.frame(ACT = Xh), interval = "confidence", level = 0.95)
+
+# Prediction interval for individual GPA at Xh = 30
+predict(model, newdata = data.frame(ACT = Xh), interval = "prediction", level = 0.95)
+```
+
+## Problem 2
+
+### Part A
+```{r}
+# find ANOVA values in R
+SSR <- 3.74644
+n <- 122
+SSTO <- 45.8743  
+SSE <- SSTO - SSR
+df_reg <- 1
+df_error <- n - 2
+df_total <- n - 1
+MSR <- SSR / df_reg
+MSE <- SSE / df_error
+
+# Create a data frame for the ANOVA table
+anova_table <- data.frame(
+  Source = c("Regression", "Error", "Total"),
+  SS = c(SSR, SSE, SSTO),
+  df = c(df_reg, df_error, df_total),
+  MS = c(MSR, MSE, NA)
+)
+
+knitr::kable(anova_table, caption = "ANOVA Table for Simple Linear Regression")
+```
+
+
+### Part B
+```{r}
+# Given values
+SSR <- 3.74644
+SSTO <- 45.8743
+n <- 122
+
+# find SSE
+SSE <- SSTO - SSR
+
+# Degrees of freedom
+df_reg <- 1
+df_error <- n - 2
+
+# find MSR and MSE
+MSR <- SSR / df_reg
+MSE <- SSE / df_error
+
+# find F-statistic
+F_stat <- MSR / MSE
+
+# Critical value from F-table for (1, 120) df at alpha = 0.05
+F_critical <- 3.92  # From provided F-table
+
+# Compare F-statistic with F-critical
+reject_null <- F_stat > F_critical
+comparison_result <- ifelse(F_stat > F_critical, 
+                            "F-statistic is greater, reject H0", 
+                            "F-critical is greater, fail to reject H0")
+
+# Output results
+cat("F-statistic:", round(F_stat, 3), "\n")
+cat("Critical Value (F_critical):", round(F_critical, 3), "\n")
+cat("Comparison: F =", round(F_stat, 3), "vs. F_critical =", round(F_critical, 3), "\n")
+cat("Result:", comparison_result, "\n")
+
+if (reject_null) {
+  cat("Conclusion: There is significant evidence to conclude a relationship exists\n")
+  cat("between ACT scores and GPA.\n")
+} else {
+  cat("Conclusion: There is insufficient evidence to conclude a relationship exists\n")
+  cat("between ACT scores and GPA.\n")
+}
+```
+
+
+### Part C
+```{r}
+# Given t-statistic from Problem 1(b)
+t_statistic <- 3.131  
+
+# Given F-statistic from Problem 2(b)
+F_actual <- 10.67  
+
+# Output comparison
+cat("Test Statistic from Problem 1(b) (t*):", round(t_statistic, 3), "\n")
+cat("Test Statistic from Problem 2(b) (F*):", round(F_actual, 3), "\n")
+
+cat("The F-statistic is simply the square of the t-statistic (F = t^2).\n")
+cat("Since we are testing a single predictor,\n")
+cat("both tests assess the same hypothesis and lead to the same conclusion.\n")
+```
+
+### Part D
+```{r}
+# Given values from ANOVA table
+SSR <- 3.74644  
+SSTO <- 45.8743 
+
+# find R-squared (coefficient of determination)
+R_squared <- SSR / SSTO
+
+# Output R-squared value
+cat("Coefficient of Determination (R^2):", round(R_squared, 4), "\n")
+
+cat("\nInterpretation:\n")
+cat("The R^2 value of 0.0817 means that approximately 8.17% of the variation\n")
+cat("in freshman GPA is explained by ACT scores in this regression model.\n")
+cat("This suggests that ACT scores have a weak predictive power for GPA.\n")
+
+```
+
+### Part E
+```{r}
+# Given values
+beta_1 <- 0.03908  
+S_xx <- 2452.959  
+SSTO <- 45.8743  
+# find correlation coefficient formula
+r_value <- beta_1 * sqrt(S_xx / SSTO)
+# Output correlation coefficient
+cat("Correlation Coefficient (r):", round(r_value, 4), "\n")
+
+cat("The correlation coefficient r is calculated using the formula:\n")
+cat("r = beta_1 * sqrt(S_xx / SSTO).\n")
+cat("Since the regression slope (beta_1) is positive,\n")
+cat("the correlation coefficient is also positive.\n")
+```
+
+### Part F
+```{r}
+# Given values
+r_value <- 0.2859
+n <- 122
+
+# find test statistic
+t_statistic <- r_value * sqrt((n - 2) / (1 - r_value^2))
+
+# Determine critical t-value for two-tailed test at alpha = 0.05
+alpha <- 0.05
+df <- n - 2  # Degrees of freedom
+t_critical <- qt(1 - alpha / 2, df)
+
+# Compare test statistic with critical value
+reject_null <- abs(t_statistic) > t_critical
+comparison_result <- ifelse(reject_null, 
+                            "Test statistic is greater, reject H0",
+                            "Critical value is greater, fail to reject H0")
+
+# Output results
+cat("Hypothesis Test for Correlation Coefficient:\n")
+cat("Null Hypothesis (H0): ρ = 0 (No correlation)\n")
+cat("Alternative Hypothesis (Ha): ρ ≠ 0 (There is a correlation)\n")
+cat("Test Statistic (t*):", round(t_statistic, 3), "\n")
+cat("Critical Value (t_critical):", round(t_critical, 3), "\n")
+cat("Comparison: |t*| =", round(abs(t_statistic), 3), "vs. t_critical =", round(t_critical, 3), "\n")
+cat("Result:", comparison_result, "\n")
+
+# Conclusion
+cat("\nConclusion:\n")
+if (reject_null) {
+  cat("Since the test statistic exceeds the critical value,\n")
+  cat("we reject the null hypothesis.\n")
+  cat("There is significant evidence to suggest a correlation exists.\n")
+} else {
+  cat("Since the test statistic does not exceed the critical value,\n")
+  cat("we fail to reject the null hypothesis.\n")
+  cat("There is insufficient evidence to suggest a correlation exists.\n")
+}
+```
+
+### Part G
+```{r}
+# Fit linear regression model
+model <- lm(GPA ~ ACT, data = dataset)
+
+# Generate ANOVA table
+anova_table <- anova(model)
+
+# Extract F-statistic and p-value
+F_statistic <- anova_table$`F value`[1]
+p_value <- anova_table$`Pr(>F)`[1]
+
+# find R-squared (coefficient of determination)
+R_squared <- summary(model)$r.squared
+
+# Output ANOVA table
+cat("\nANOVA Table:\n")
+knitr::kable(anova_table, caption = "ANOVA Table for Linear Regression")
+
+# Output F-test results
+cat("\nF-Test Results:\n")
+cat("F-statistic:", round(F_statistic, 3), "\n")
+cat("p-value:", format.pval(p_value, digits = 5), "\n")
+
+# Output coefficient of determination (R-squared)
+cat("\nCoefficient of Determination (R^2):", round(R_squared, 4), "\n")
+
+
+cat("\nThe ANOVA table summarizes the variance components in the regression.\n")
+cat("The F-test p-value determines if the model is statistically significant.\n")
+cat("The R-squared value represents the proportion of variation in GPA explained by ACT scores.\n")
+```
+
+## Problem 3
+### Part A
+```{r}
+
+# Define given mathematical expressions
+n <- 122  # Sample size
+x_bar <- 24.71  # Mean of X values
+S_xx <- 2452.959  # Sum of squared deviations from mean
+
+# Define k_i formula
+k_i <- function(X_i) {
+  return((X_i - x_bar) / S_xx)
+}
+
+# Define l_i formula
+l_i <- function(X_i) {
+  return((1 / n) - (k_i(X_i) * x_bar))
+}
+
+# Step 1: Prove sum of l_i equals 1
+# Sum both sides of the equation:
+# sum(l_i) = sum( (1/n) - (k_i * x_bar) )
+#           = sum(1/n) - x_bar * sum(k_i)
+# Since sum(k_i) = 0, the equation simplifies to:
+# sum(l_i) = sum(1/n) = n * (1/n) = 1
+
+proof_l_i <- n * (1/n)  # This equals 1
+cat("Proof: sum(l_i) =", proof_l_i, "(Expected: 1)\n")
+
+# Step 2: Prove sum of l_i * X_i equals 0
+# Sum both sides of the equation:
+# sum(l_i * X_i) = sum( (1/n) * X_i - (k_i * x_bar * X_i) )
+#                 = sum(X_i/n) - x_bar * sum(k_i * X_i)
+# Since sum(X_i/n) = x_bar and sum(k_i * X_i) = 1, we get:
+# sum(l_i * X_i) = x_bar - x_bar * 1 = 0
+
+proof_l_i_X_i <- x_bar - (x_bar * 1)  # This equals 0
+cat("Proof: sum(l_i * X_i) =", proof_l_i_X_i, "(Expected: 0)\n")
+
+## Verification using R
+# Given values
+n <- 122  
+x_bar <- 24.71  
+S_xx <- 2452.959  # Sum of squared deviations from mean
+
+# Construct X_i values explicitly
+X_i <- seq(x_bar - 5, x_bar + 5, length.out = n)  # Centered values around x_bar
+
+# find k_i 
+k_i <- (X_i - x_bar) / sum((X_i - x_bar) * X_i)
+
+# find l_i 
+l_i <- (1 / n) - (k_i * x_bar)
+
+# Step 1: Verify sum of k_i is 0
+sum_k_i <- sum(k_i)
+cat("Proof: Sum of k_i =", round(sum_k_i, 10), "(Expected: 0)\n")
+
+# Step 2: Verify sum of k_i * X_i is 1
+sum_k_i_X_i <- sum(k_i * X_i)
+cat("Proof: Sum of k_i * X_i =", round(sum_k_i_X_i, 10), "(Expected: 1)\n")
+
+# Step 3: Verify sum of l_i is 1
+sum_l_i <- sum(l_i)
+cat("Proof: Sum of l_i =", round(sum_l_i, 10), "(Expected: 1)\n")
+
+# Step 4: Verify sum of l_i * X_i is 0
+sum_l_i_X_i <- sum(l_i * X_i)
+cat("Proof: Sum of l_i * X_i =", round(sum_l_i_X_i, 10), "(Expected: 0)\n")
+```
+

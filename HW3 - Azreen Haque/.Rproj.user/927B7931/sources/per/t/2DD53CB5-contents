@@ -1,0 +1,334 @@
+---
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+header-includes:
+  - \usepackage{amsmath}
+  - \usepackage{array}
+  - \usepackage{pdfpages}
+geometry: margin=1in
+---
+\includepdf[pages=-]{/Users/azreen.tc/Documents/School/Spring 2025 CLASSES/STA4210/HW3 - Azreen Haque/HW03.pdf}
+
+**Azreen Haque** 
+
+**2/14/2025**
+
+**Solutions**
+
+## Problem 1
+Solutions below.
+
+
+### Part A
+```{r}
+data <- read.csv("hw03pr01.csv", header = TRUE, sep = ",")
+colnames(data)
+model <- lm(Wins ~ AvgAge, data = data)
+summary(model)
+
+# Extract coefficients
+intercept <- coef(model)[1]  # β0 (Intercept)
+slope <- coef(model)[2]       # β1 (Slope)
+
+# Print the fitted regression equation
+cat("The fitted regression equation is:\n")
+cat("Wins(Y) =", round(intercept, 2), "+", round(slope, 2), "* AvgAge(X)\n")
+
+# Interpretation
+cat("Interpretation of Slope:\n")
+cat("Each additional year in AvgAge increases wins by", slope, "games.\n\n")
+cat("Interpretation of Intercept:\n")
+cat("If AvgAge = 0, predicted wins =", intercept, ".\n")
+```
+
+### Part B
+```{r}
+anova_results <- anova(model)
+print(anova_results)
+
+# State hypotheses
+cat("Hypothesis Test for F-statistic:\n")
+cat("H0: β1 = 0 (AvgAge does NOT affect Wins)\n")
+cat("HA: β1 ≠ 0 (AvgAge DOES affect Wins)\n\n")
+
+f_stat <- anova_results$`F value`[1]
+p_value <- anova_results$`Pr(>F)`[1]
+cat("F-statistic:", round(f_stat, 3), "\n")
+cat("p-value:", round(p_value, 5), "\n")
+alpha <- 0.05
+
+if (p_value < alpha) {
+  cat("Conclusion: Reject H0. AvgAge significantly predicts Wins.\n")
+} else {
+  cat("Conclusion: Fail to reject H0. No significant relationship.\n")
+}
+```
+
+### Part C
+```{r}
+# Compute residuals
+residuals <- resid(model)
+
+# Create the residual plot
+plot(data$AvgAge, residuals, 
+     main = "Residual Plot: Wins vs. Player Age", 
+     xlab = "Average Player Age", 
+     ylab = "Residuals (e_i)", 
+     pch = 19, col = "green")
+
+# Add a horizontal line at y = 0
+abline(h = 0, col = "red", lwd = 2)
+```
+
+### Part D
+```{r}
+# Compute MSE (Mean Squared Error)
+mse <- sum(residuals^2) / df.residual(model)
+
+# Compute standardized residuals
+std_residuals <- residuals / sqrt(mse)
+
+# Plot standardized residuals vs. AvgAge
+plot(data$AvgAge, std_residuals, 
+     main = "Standardized Residual Plot: Wins vs. Player Age", 
+     xlab = "Average Player Age", 
+     ylab = "Standardized Residuals (e*_i)", 
+     pch = 19, col = "green")
+
+# Add horizontal reference line at y = 0
+abline(h = 0, col = "red", lwd = 2)
+
+# Add dotted horizontal lines at e*_i = ±3
+abline(h = 3, col = "black", lty = 2)
+abline(h = -3, col = "black", lty = 2)
+
+```
+
+### Part E
+```{r}
+cat("Violation 4: Model fits all but one outlying observation\n")
+```
+
+### Part F
+```{r}
+# Identify non-outlier data points based on standardized residuals
+data_clean <- data[abs(resid(model) / summary(model)$sigma) < 3, ]
+
+# Refit the regression model without outliers
+model_clean <- lm(Wins ~ AvgAge, data = data_clean)
+
+# Plot Standardized Residuals
+plot(data_clean$AvgAge, resid(model_clean) / summary(model_clean)$sigma,
+     main = "Standardized Residual Plot (After Outlier Removal)",
+     ylab = "Standardized Residual",
+     xlab = "Average Player Age",
+     pch = 19, col = "green")
+
+# Add reference lines
+abline(a = 0, b = 0, lty = 2)  # Zero reference line
+abline(a = -3, b = 0, lty = 3) # Lower bound (-3)
+abline(a = 3, b = 0, lty = 3)  # Upper bound (+3)
+
+# Run ANOVA for both models
+anova_original <- anova(model)
+anova_clean <- anova(model_clean)
+
+# Print F-statistics and p-values for comparison
+cat("Before Removing Outliers:\n")
+cat("F-statistic:", round(anova_original$`F value`[1], 3), "\n")
+cat("p-value:", round(anova_original$`Pr(>F)`[1], 5), "\n")
+
+cat("\nAfter Removing Outliers:\n")
+cat("F-statistic:", round(anova_clean$`F value`[1], 3), "\n")
+cat("p-value:", round(anova_clean$`Pr(>F)`[1], 5), "\n")
+
+# Compare hypothesis test decision
+if (round(anova_clean$`Pr(>F)`[1], 5) < 0.05) {
+  cat("Conclusion: Reject H0. AvgAge significantly predicts Wins.\n")
+} else {
+  cat("Conclusion: Fail to reject H0. No significant relationship.\n")
+}
+
+cat("The violation was resolved leading to a corrected conclusion.\n")
+
+```
+
+## Problem 2
+
+### Part A
+```{r}
+data <- read.csv("hw03pr02.csv", header = TRUE, sep = ",")
+colnames(data)
+model <- lm(Deflection ~ Area, data = data)
+summary(model)
+intercept <- coef(model)[1]
+slope <- coef(model)[2]
+cat("The fitted regression equation is:\n")
+cat("Deflection(Y) =", round(intercept, 2), "+", round(slope, 2), "* Area(X)\n")
+
+```
+
+
+### Part B
+```{r}
+# Compute residuals
+residuals <- resid(model)
+
+# Create residual plot
+plot(data$Area, residuals,
+     main = "Residual Plot: Deflection vs. Area",
+     xlab = "Area",
+     ylab = "Residuals",
+     pch = 19, col = "blue")
+
+# Add a horizontal line at y = 0
+abline(h = 0, col = "red", lwd = 2)
+```
+
+
+### Part C
+```{r}
+cat("Violation 1: The regression function is not linear.")
+```
+
+### Part D
+```{r}
+# Load necessary library
+library(MASS)
+
+# Fit the initial linear model
+model <- lm(Deflection ~ Area, data = data)
+
+# Apply Box-Cox transformation to find optimal lambda
+boxcox_result <- boxcox(model, lambda = seq(-2, 2, by = 0.1))  # Generates Box-Cox plot
+
+# Find the optimal lambda (maximizing log-likelihood)
+lambda_opt <- boxcox_result$x[which.max(boxcox_result$y)]
+cat("Optimal Lambda:", lambda_opt, "\n")
+
+# Select the closest transformation from the notes
+if (lambda_opt >= 1.9 & lambda_opt <= 2.1) {
+    data$Deflection_Transformed <- data$Deflection^2  # Y^2
+    cat("Chosen Transformation: Y^2\n")
+} else if (lambda_opt >= 0.4 & lambda_opt <= 0.6) {
+    data$Deflection_Transformed <- sqrt(data$Deflection)  # sqrt(Y)
+    cat("Chosen Transformation: sqrt(Y)\n")
+} else if (lambda_opt >= -0.1 & lambda_opt <= 0.1) {
+    data$Deflection_Transformed <- log(data$Deflection + abs(min(data$Deflection)) + 0.01)  # log(Y)
+    cat("Chosen Transformation: log(Y)\n")
+} else if (lambda_opt >= -0.6 & lambda_opt <= -0.4) {
+    data$Deflection_Transformed <- 1 / sqrt(data$Deflection)  # 1/sqrt(Y)
+    cat("Chosen Transformation: 1/sqrt(Y)\n")
+} else if (lambda_opt >= -1.1 & lambda_opt <= -0.9) {
+    data$Deflection_Transformed <- 1 / data$Deflection  # 1/Y
+    cat("Chosen Transformation: 1/Y\n")
+} else {
+    cat("Chosen Transformation: No common transformation found\n")
+}
+
+# Fit the new model with the transformed Y (if applicable)
+if (exists("data$Deflection_Transformed")) {
+    model_transformed <- lm(Deflection_Transformed ~ Area, data = data)
+    summary(model_transformed)
+}
+
+```
+
+### Part E
+```{r}
+data$Transformed_Deflection <- log(data$Deflection)
+# Fit the linear model with transformed Y
+model_transformed <- lm(Transformed_Deflection ~ data$Area, data = data)
+summary(model_transformed)
+
+# Create the residual plot for transformed Y
+plot(data$Area, resid(model_transformed),
+     main = "Residual Plot: Transformed Deflection vs. Area",
+     xlab = "Area", ylab = "Residuals",
+     col = "blue", pch = 19)
+abline(h = 0, col = "red", lwd = 2)
+
+# Check if the violation is resolved
+cat("Check residual plot: the spread is more random, transformation was effective.\n")
+
+```
+
+
+## Problem 3
+### Part A
+```{r}
+# Load necessary library
+library(ggplot2)
+
+# Load the dataset
+data <- read.csv("hw03pr03.csv", header = TRUE, sep = ",")
+
+colnames(data)
+
+# Generate a Q-Q plot for the outcome variable (ensure correct column name)
+qqnorm(data$y, main = "Q-Q Plot of Outcome Y")
+qqline(data$y, col = "red", lwd = 2)  # Adds a reference line
+
+# observations
+cat("Observations:\n",
+    "- The Q-Q plot is used to assess whether the residuals follow a normal distribution.\n",
+    "- If the points lie along the straight red line, the residuals are normally distributed.\n",
+    "- In this case, the points deviate significantly from the line, especially at the tails, indicating a violation of normality.\n",
+    "- This suggests that a transformation might be necessary to make the residuals more normal.\n")
+
+```
+
+### Part b
+```{r}
+# Load necessary library
+library(MASS)
+
+# Fit the linear model
+# Fit the linear model
+model <- lm(y ~ x, data = data)
+
+# Perform the Box-Cox transformation
+library(MASS)
+boxcox_result <- boxcox(model, lambda = seq(-2, 2, by = 0.1))
+
+# Find the optimal lambda
+lambda_optimal <- boxcox_result$x[which.max(boxcox_result$y)]
+
+# Print the transformation applied
+cat("The optimal lambda (λ) found is:", lambda_optimal, "\n")
+
+# Apply the transformation based on the closest lambda value
+if (lambda_optimal > 1.5) {
+    data$y_transformed <- data$y^2
+    cat("Transformation applied: Y' = Y^2\n")
+} else if (lambda_optimal > 0.25) {
+    data$y_transformed <- sqrt(data$y)
+    cat("Transformation applied: Y' = sqrt(Y)\n")
+} else if (lambda_optimal > -0.25) {
+    data$y_transformed <- log(data$y)
+    cat("Transformation applied: Y' = log(Y)\n")
+} else if (lambda_optimal > -0.75) {
+    data$y_transformed <- 1 / sqrt(data$y)
+    cat("Transformation applied: Y' = 1 / sqrt(Y)\n")
+} else {
+    data$y_transformed <- 1 / data$y
+    cat("Transformation applied: Y' = 1 / Y\n")
+}
+
+```
+```{r}
+# Apply the transformation to Y
+data$Y_transformed <- log(data$y)
+
+# Generate Q-Q plot for transformed Y
+qqnorm(data$Y_transformed, main = "Q-Q Plot of Transformed Outcome Y")
+qqline(data$Y_transformed, col = "red", lwd = 2)
+
+# Print observation
+cat("The Q-Q plot for the transformed outcome Y now aligns more closely with the normality assumption. 
+The data points are much closer to the diagonal reference line compared to the original Q-Q plot, 
+suggesting that the transformation helped correct the non-normality issue. 
+There may still be minor deviations in the tails, but overall, normality is significantly improved.")
+```
+

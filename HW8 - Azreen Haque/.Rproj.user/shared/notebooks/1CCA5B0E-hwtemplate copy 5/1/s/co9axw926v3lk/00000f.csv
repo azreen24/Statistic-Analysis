@@ -1,0 +1,8 @@
+"0","### Part H: Added Variable Plots (AV Plots)"
+"0","library(car)"
+"0",""
+"0","# Fit model from part (b)"
+"0","model_b <- lm(Y ~ X2 + X3 + X4 + X5, data = data)"
+"0",""
+"0","# Create Added Variable Plots for each predictor in the model"
+"0","avPlots(model_b, ask = FALSE)"

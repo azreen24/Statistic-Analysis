@@ -1,0 +1,5 @@
+"0","# Create residual plot"
+"0","plot(data$age, resid(model1), "
+"0","     main = ""Residual Plot"", "
+"0","     xlab = ""Age"", "
+"0","     ylab = ""Residuals"")"

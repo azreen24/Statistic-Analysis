@@ -1,0 +1,9 @@
+"0",""
+"0","# Show all influential or outlier observations"
+"0","cat(""\n=== Flagged Observations ===\n"")"
+"1","
+=== Flagged Observations ===
+"
+"0","flagged <- diagnostics %>%"
+"0","  filter(Outlier_Studentized | High_Leverage | Influential_DFFITS | Influential_CooksD | Influential_DFBETA)"
+"0","print(flagged)"

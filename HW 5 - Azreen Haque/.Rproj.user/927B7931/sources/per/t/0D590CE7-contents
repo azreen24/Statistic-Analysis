@@ -1,0 +1,457 @@
+---
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+header-includes:
+  - \usepackage{amsmath}
+  - \usepackage{array}
+  - \usepackage{pdfpages}
+geometry: margin=1in
+---
+
+**Azreen Haque** 
+
+**3/27/2025**
+
+**Solutions**
+
+## Problem 1
+Solutions below.
+
+### Part A
+```{r}
+data <- read.csv("hw05pr01.csv", header = TRUE, sep = ",")
+names(data)
+
+# Extracting X and Y data
+Xi <- data$Children
+Yi <- data$Hours
+n <- length(Xi)
+
+# Compute sums manually
+sum_X <- sum(Xi)
+sum_Y <- sum(Yi)
+sum_X2 <- sum(Xi^2)
+sum_XY <- sum(Xi * Yi)
+
+# Compute X'X manually
+XtX <- matrix(c(n, sum_X,
+                sum_X, sum_X2), 
+              nrow = 2, byrow = TRUE)
+
+# Compute X'Y manually
+XtY <- matrix(c(sum_Y, sum_XY), nrow = 2, byrow = TRUE)
+
+# Compute determinant manually
+determinant <- n * sum_X2 - (sum_X)^2
+
+# Compute inverse (X'X)^(-1) manually
+XtX_inv <- (1 / determinant) * matrix(c(sum_X2, -sum_X,
+                                       -sum_X, n),
+                                      nrow = 2, byrow = TRUE)
+
+# Display results
+cat("X'X =\n")
+print(XtX)
+
+cat("\nX'Y =\n")
+print(XtY)
+
+cat("\n(X'X)^(-1) =\n")
+print(XtX_inv)
+```
+
+### Part B
+```{r}
+X_data <- data$Children
+Y_data <- data$Hours
+n <- length(X_data)
+
+# Design matrix X and response matrix Y
+X <- cbind(1, X_data)
+Y <- matrix(Y_data, nrow = n, ncol = 1)
+
+# Calculate matrices in R
+XtX <- t(X) %*% X
+XtY <- t(X) %*% Y
+XtX_inv <- solve(XtX)
+
+# Calculate b (Regression coefficients)
+b <- XtX_inv %*% XtY
+
+# Calculate Y-hat (Fitted values)
+Y_hat <- X %*% b
+
+# Calculate e (Residuals)
+e <- Y - Y_hat
+
+# Output all matrices
+cat("X'X:\n"); print(XtX)
+cat("\nDimension of X'X:", dim(XtX), "\n\n")
+
+cat("X'Y:\n"); print(XtY)
+cat("\nDimension of X'Y:", dim(XtY), "\n\n")
+
+cat("(X'X)^-1:\n"); print(XtX_inv)
+cat("\nDimension of (X'X)^-1:", dim(XtX_inv), "\n\n")
+
+cat("b (coefficients):\n"); print(b)
+cat("\nDimension of b:", dim(b), "\n\n")
+
+cat("Y-hat (fitted values):\n"); print(Y_hat)
+cat("\nDimension of Y-hat:", dim(Y_hat), "\n\n")
+
+cat("e (residuals):\n"); print(e)
+cat("\nDimension of e:", dim(e), "\n\n")
+
+# Fitted regression equation
+cat(sprintf("Fitted Regression Equation: Y_hat = %.3f + %.3f*X\n", b[1], b[2]))
+```
+
+### Part C
+```{r}
+# Perform Simple Linear Regression using lm()
+model <- lm(Y_data ~ X_data, data = data)
+
+# Display model summary
+model_summary <- summary(model)
+print(model_summary)
+
+# Extract coefficients and MSE
+coefficients <- model$coefficients
+MSE <- sum(model$residuals^2) / (n - 2)
+
+# Display fitted equation
+cat(sprintf("\nFitted Regression Equation from lm(): Y_hat = %.3f + %.3f*X\n",
+            coefficients[1], coefficients[2]))
+
+# Display MSE
+cat(sprintf("Mean Squared Error (MSE) = %.3f\n", MSE))
+
+# Output comparison statement
+cat("The fitted equations from manual calculations and the lm() function match closely.\n")
+```
+
+### Part D
+```{r}
+# Extract Mean Squared Error (MSE) from model summary
+MSE <- summary(model)$sigma^2
+cat("Mean Squared Error (MSE):", MSE, "\n\n")
+
+# Variance-covariance matrix calculation manually using MSE
+Var_b <- MSE * XtX_inv
+cat("Variance-Covariance matrix of b (manually):\n")
+print(Var_b)
+
+# Extract variance and covariance values from Var(b)
+Var_b0 <- Var_b[1,1]    # Variance of Intercept (b0)
+Var_b1 <- Var_b[2,2]    # Variance of slope (b1)
+Cov_b0b1 <- Var_b[1,2]  # Covariance between b0 and b1
+
+cat("\nVariance of b0:", Var_b0, "\n")
+cat("Variance of b1:", Var_b1, "\n")
+cat("Covariance between b0 and b1:", Cov_b0b1, "\n\n")
+
+# Compare manually computed variance-covariance with vcov() output
+Var_cov_matrix_builtin <- vcov(model)
+cat("Variance-Covariance Matrix from manual calculation:\n")
+print(Var_b)
+
+cat("\nVariance-Covariance Matrix using vcov() function:\n")
+print(Var_cov_matrix_builtin)
+```
+
+### Part E
+```{r}
+# Hat Matrix (H) calculation
+H <- X %*% XtX_inv %*% t(X)
+
+# Display Hat matrix and its dimension
+cat("Hat Matrix (H):\n")
+print(H)
+cat("\nDimension of H:", dim(H), "\n\n")
+
+# Compute fitted values using Hat matrix
+Y_hat_H <- H %*% Y
+cat("Fitted values (Y_hat) using Hat Matrix:\n")
+print(Y_hat)
+
+# Verify if the fitted values match those from lm()
+Y_hat_lm <- fitted(model)
+match_fitted <- all.equal(as.vector(Y_hat), as.vector(Y_hat_lm), tolerance=1e-5)
+
+if(isTRUE(match_fitted)){
+  cat("\nFitted values from Hat Matrix match those from lm().\n\n")
+} else {
+  cat("Fitted values do NOT match.\n")
+}
+```
+
+### Part F
+```{r}
+H_transpose <- t(H)
+HH <- H %*% H
+
+# Check symmetry
+is_symmetric <- all.equal(H, H_transpose, tolerance=1e-5)
+
+# Check idempotency
+is_idempotent <- all.equal(HH, H, tolerance=1e-5)
+
+cat("\nHat Matrix symmetry check (H' = H):", is_symmetric, "\n")
+cat("Hat Matrix idempotent check (HH = H):", is_idempotent, "\n")
+```
+
+### Part G
+```{r}
+# Prediction using predict() function
+new_data <- data.frame(X_data = 5)
+predict_lm <- predict(model, newdata = new_data)
+
+cat("Prediction using predict() function (X=5):", predict_lm, "\n")
+
+# Prediction manually using matrices Xh and b
+Xh <- matrix(c(1, 5), nrow = 1)
+predict_manual <- Xh %*% b
+
+cat("Prediction manually calculated using matrices (X=5):", predict_manual, "\n")
+
+# Compare the predictions
+prediction_match <- all.equal(as.numeric(predict_lm), as.numeric(Xh %*% b), tolerance = 1e-5)
+
+if (isTRUE(prediction_match)){
+  cat("\nThe predictions from predict() and manual calculation match closely.\n")
+} else {
+  cat("\nThe predictions from predict() and manual calculation do NOT match.\n")
+}
+```
+
+
+## Problem 2
+
+### Part A
+```{r}
+data <- read.csv("hw05pr02.csv", header = TRUE, sep = ",")
+names(data)
+model <- lm(satisfaction ~ age + illness + anxiety, data = data)
+
+# Display the regression summary
+summary(model)
+
+# Extract coefficients
+coefficients <- model$coefficients
+cat(sprintf("\nFitted Regression Equation:\nSatisfaction = %.3f + %.3f*Age + %.3f*Illness + %.3f*Anxiety\n",
+            coefficients[1], coefficients[2], coefficients[3], coefficients[4]))
+# Interpretation of coefficients
+cat("\nInterpretation of Coefficients:\n")
+
+cat("1. Intercept (b0): The predicted satisfaction when age,\n")
+cat("   illness, and anxiety are all zero. In a real-world\n")
+cat("   context, this may not be meaningful as a patient\n")
+cat("   with zero age is unrealistic in regards to years & satisfaction.\n\n")
+
+cat("2. Age (b1): A one-year increase in age decreases\n")
+cat("   satisfaction by", round(coefficients[2], 3), "points,\n")
+cat("   holding illness and anxiety constant. Since\n")
+cat("   p-value < 0.05, age is statistically significant.\n\n")
+
+cat("3. Illness (b2): A one-unit increase in illness\n")
+cat("   decreases satisfaction by", round(coefficients[3], 3), "points.\n")
+cat("   Since p-value > 0.05, illness is not statistically\n")
+cat("   significant. In practice, we may not interpret this\n")
+cat("   coefficient as reliable.\n\n")
+
+cat("4. Anxiety (b3): A one-unit increase in anxiety\n")
+cat("   decreases satisfaction by", round(coefficients[4], 3), "points.\n")
+cat("   P-value < 0.05, meaning anxiety is statistically\n")
+cat("   significant in predicting satisfaction.\n\n")
+```
+
+### Part B
+```{r}
+X <- as.matrix(cbind(1, data$age, data$illness, data$anxiety))
+Y <- as.matrix(data$satisfaction)
+
+XtX <- t(X) %*% X # Compute X'X
+XtX_inv <- solve(XtX) # Compute (X'X)^-1
+XtY <- t(X) %*% Y # Compute X'Y
+b <- XtX_inv %*% XtY # Compute b (coefficients)
+
+# Output matrices and their dimensions
+cat("\nMatrix X'X:\n")
+print(XtX)
+cat("Dimensions of X'X:", dim(XtX), "\n\n")
+
+cat("Matrix (X'X)^-1:\n")
+print(XtX_inv)
+cat("Dimensions of (X'X)^-1:", dim(XtX_inv), "\n\n")
+
+cat("Matrix X'Y:\n")
+print(XtY)
+cat("Dimensions of X'Y:", dim(XtY), "\n\n")
+
+cat("Vector b (coefficients):\n")
+print(b)
+cat("Dimensions of b:", dim(b), "\n")
+```
+
+### Part C
+```{r}
+# Extract MSE from model summary
+MSE <- summary(model)$sigma^2
+
+# Compute Variance-Covariance Matrix
+Var_b <- MSE * XtX_inv
+
+# Extract variances and covariances
+Var_b0 <- Var_b[1,1]  # Variance of Intercept
+Var_b1 <- Var_b[2,2]  # Variance of Age
+Var_b2 <- Var_b[3,3]  # Variance of Illness
+Var_b3 <- Var_b[4,4]  # Variance of Anxiety
+
+Cov_b1b2 <- Var_b[2,3]  # Covariance between Age and Illness
+Cov_b1b3 <- Var_b[2,4]  # Covariance between Age and Anxiety
+Cov_b2b3 <- Var_b[3,4]  # Covariance between Illness and Anxiety
+
+# Compare with built-in vcov() function
+Var_b_builtin <- vcov(model)
+
+cat("\nVariance-Covariance Matrix of b (Manual Calculation):\n", Var_b, "\n")
+cat("\nVariance-Covariance Matrix using vcov():\n", Var_b_builtin, "\n")
+```
+
+### Part D
+```{r}
+# Perform ANOVA
+anova_results <- anova(model)
+
+# Extract Sum of Squares
+SSR <- sum(anova_results[1:3,2])
+SSE <- anova_results[4,2]
+SST <- SSR + SSE
+
+# Extract Degrees of Freedom
+df_regression <- sum(anova_results[1:3,1])
+df_error <- anova_results[4,1]
+df_total <- df_regression + df_error
+
+# Compute Mean Squares
+MSR <- SSR / df_regression
+MSE <- SSE / df_error
+
+# Manually Constructed ANOVA Table
+anova_manual <- data.frame(
+  Source = c("Regression", "Error", "Total"),
+  DF = c(df_regression, df_error, df_total),
+  Sum_Sq = c(SSR, SSE, SST),
+  Mean_Sq = c(MSR, MSE, NA)
+)
+
+# Print ANOVA Table
+print(anova_manual)
+```
+
+### Part E
+```{r}
+# Extract Sum of Squares values from ANOVA table
+SSTO <- 13323.500  
+SSR <- 9041.371 
+SSE <- 4282.129
+
+# Compute R-squared
+R_squared <- SSR / SSTO
+
+# Display result
+cat(sprintf("\nR-squared (from ANOVA table) = %.4f\n", R_squared))
+
+# Compare with summary(model) R-squared
+summary_R2 <- summary(model)$r.squared
+cat(sprintf("\nR-squared (from model summary) = %.4f\n", summary_R2))
+
+# Interpretation
+cat("\nInterpretation:\n")
+cat("\nInterpretation:\n")
+cat("R-squared represents the proportion of variability in satisfaction\n")
+cat("explained by age, illness, and anxiety.\n")
+cat(sprintf("With R^2 = %.4f, this means that %.2f%% of the variation in satisfaction\n", 
+            R_squared, R_squared * 100))
+cat("is explained by the predictors in the model, while the remaining 32.14%\n")
+cat("is due to other factors not included in the model.\n")
+cat("The values from the ANOVA table and model summary should match closely.\n")
+```
+
+### Part F
+```{r}
+# Compute SSTO, SSE, and SSR using summation formulas
+# Total Sum of Squares (SSTO)
+sst_total <- sum((data$satisfaction - mean(data$satisfaction))^2)
+cat("\nSSTO (Summation Formula):", sst_total, "\n")
+
+# Error Sum of Squares (SSE)
+predicted_values <- predict(model)
+sse_error <- sum((data$satisfaction - predicted_values)^2)
+cat("SSE (Summation Formula):", sse_error, "\n")
+
+# Regression Sum of Squares (SSR)
+ssr_regression <- sst_total - sse_error
+cat("SSR (Summation Formula):", ssr_regression, "\n")
+
+# Compute SSTO, SSE, and SSR using matrix form
+# Define response variable Y and design matrix X
+Y <- as.matrix(data$satisfaction)
+X <- model.matrix(model)
+
+# Compute hat matrix H
+H <- X %*% solve(t(X) %*% X) %*% t(X)
+
+# Compute SSTO (Total Sum of Squares)
+sst_matrix <- t(Y - mean(Y)) %*% (Y - mean(Y))
+cat("\nSSTO (Matrix Form):", sst_matrix[1,1], "\n")
+
+# Compute SSE (Error Sum of Squares)
+sse_matrix <- t(Y - H %*% Y) %*% (Y - H %*% Y)
+cat("SSE (Matrix Form):", sse_matrix[1,1], "\n")
+
+# Compute SSR (Regression Sum of Squares)
+ssr_matrix <- sst_matrix - sse_matrix
+cat("SSR (Matrix Form):", ssr_matrix[1,1], "\n")
+
+# Compare the two methods
+cat("\nComparison:\n")
+cat("Difference in SSTO:", abs(sst_total - sst_matrix[1,1]), "\n")
+cat("Difference in SSE:", abs(sse_error - sse_matrix[1,1]), "\n")
+cat("Difference in SSR:", abs(ssr_regression - ssr_matrix[1,1]), "\n")
+```
+
+## Problem 3
+### Part A
+```{r}
+# Given Matrices and Vectors
+E_V <- matrix(c(4, -1), nrow = 2)
+E_U <- matrix(c(-2, 3), nrow = 2)
+Var_V <- matrix(c(2,1,1,3), nrow = 2)
+Var_U <- matrix(c(1,-1,-1,2), nrow = 2)
+A <- matrix(c(-3,1,2,-5), nrow = 2, byrow = TRUE)
+B <- matrix(c(0,-2,1,4), nrow = 2, byrow = TRUE)
+C <- matrix(c(-1,2), nrow = 2)
+
+# (a) E(AV + BU)
+E_AV_BU <- A %*% E_V + B %*% E_U
+cat("E(AV + BU):\n")
+print(E_AV_BU)
+```
+
+### Part B
+```{r}
+Var_AV <- A %*% Var_V %*% t(A)
+cat("\nVar(AV + C):\n")
+print(Var_AV) # C doesn't affect variance
+```
+
+### Part C
+```{r}
+# (c) Var(BU + C)
+Var_BU <- B %*% Var_U %*% t(B)
+cat("\nVar(BU + C):\n")
+print(Var_BU) # C does not affect variance,omitted
+```

@@ -1,0 +1,47 @@
+"0",""
+"0","cat("
+"0","  ""The residual plot for the linear model shows a U-shaped pattern,\n"","
+"0","  ""suggesting that the relationship between age and steroid level\n"","
+"0","  ""is not adequately captured by a simple linear model.\n\n"","
+"0",""
+"0","  ""This is a violation of the linearity assumption.\n\n"","
+"0",""
+"0","  ""The variance of residuals appears roughly constant,\n"","
+"0","  ""and no standardized residuals exceed ±3,\n"","
+"0","  ""so the constant variance and outlier assumptions\n"","
+"0","  ""are reasonably met.\n\n"","
+"0",""
+"0","  ""Conclusion: The linear model violates the linearity assumption,\n"","
+"0","  ""and a more appropriate model may be quadratic."""
+"0",")"
+"1","The residual plot for the linear model shows a U-shaped pattern,
+"
+"1"," "
+"1","suggesting that the relationship between age and steroid level
+"
+"1"," "
+"1","is not adequately captured by a simple linear model.
+
+"
+"1"," "
+"1","This is a violation of the linearity assumption.
+
+"
+"1"," "
+"1","The variance of residuals appears roughly constant,
+"
+"1"," "
+"1","and no standardized residuals exceed ±3,
+"
+"1"," "
+"1","so the constant variance and outlier assumptions
+"
+"1"," "
+"1","are reasonably met.
+
+"
+"1"," "
+"1","Conclusion: The linear model violates the linearity assumption,
+"
+"1"," "
+"1","and a more appropriate model may be quadratic."

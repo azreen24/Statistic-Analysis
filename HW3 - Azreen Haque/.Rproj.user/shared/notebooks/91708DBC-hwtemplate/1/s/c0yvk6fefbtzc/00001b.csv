@@ -1,0 +1,3 @@
+"0",""
+"0","# Add dotted horizontal lines at e*_i = ±3"
+"0","abline(h = 3, col = ""black"", lty = 2)"

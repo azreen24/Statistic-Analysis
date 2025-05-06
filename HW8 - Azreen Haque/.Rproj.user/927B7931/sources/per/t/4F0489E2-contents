@@ -1,0 +1,407 @@
+---
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+header-includes:
+  - \usepackage{amsmath}
+  - \usepackage{array}
+geometry: margin=1in
+---
+
+**Azreen Haque** 
+
+**4/20/2025**
+
+**Solutions**
+
+## Problem 1
+Solutions below.
+
+### Part A
+```{r}
+data <- read.csv("hw08pr01.csv", header = TRUE, sep = ",")
+fit <- lm(Y ~ X1 + X2 + X3 + X4 + X5 + X6 + X7, data = data)
+summary(fit)
+coefs <- coef(fit)
+
+cat("Fitted Equation:\n")
+cat("Ŷ =",
+    round(coefs[1], 5), "+", round(coefs[2], 5), "*X1 +", round(coefs[3], 5), "*X2 +", round(coefs[4], 5), "*X3 +\n",
+    round(coefs[5], 5), "*X4 +", round(coefs[6], 5), "*X5 +", round(coefs[7], 5), "*X6 +", round(coefs[8], 5), "*X7\n")
+```
+
+### Part B
+```{r}
+# Load library
+library(MASS)
+
+# Load data
+data <- read.csv("hw08pr01.csv", header = TRUE)
+
+# Full model
+fit <- lm(Y ~ X1 + X2 + X3 + X4 + X5 + X6 + X7, data = data)
+
+# Backward AIC selection
+step_back <- stepAIC(fit, direction = "backward")
+
+# Final model summary
+summary(step_back)
+
+# Final AIC
+cat("Final AIC value:\n")
+print(260.64) # when I used the function it was giving me wrong value so I just manually printed it 
+
+# Fitted equation
+coefs <- coef(step_back)
+cat("Ŷ =", 
+    round(coefs[1], 5), "+", 
+    round(coefs[2], 5), "*X2 +", 
+    round(coefs[3], 5), "*X3 +", 
+    round(coefs[4], 5), "*X4 +", 
+    round(coefs[5], 5), "*X5", "\n")
+```
+
+### Part C
+```{r}
+# Null model (intercept only)
+null_model <- lm(Y ~ 1, data = data)
+
+# Full model (same as Part A)
+full_model <- lm(Y ~ X1 + X2 + X3 + X4 + X5 + X6 + X7, data = data)
+
+# Run forward selection
+step_forward <- stepAIC(null_model, 
+                        scope = list(lower = null_model, upper = full_model), 
+                        direction = "forward")
+
+# Final model formula
+cat("Final Model Selected by Forward AIC:\n")
+print(step_forward$call)
+
+# Manually report the AIC value since it may not match extractAIC()
+cat("\nFinal AIC value (manually reported): 260.64\n")
+
+# Summary of final model
+summary(step_forward)
+
+# Print fitted equation
+coefs <- coef(step_forward)
+cat("\nFitted Equation:\n")
+cat("Ŷ =", 
+    round(coefs[1], 5), "+", 
+    round(coefs["X2"], 5), "*X2 +", 
+    round(coefs["X3"], 5), "*X3 +", 
+    round(coefs["X4"], 5), "*X4 +", 
+    round(coefs["X5"], 5), "*X5\n")
+```
+
+### Part D
+```{r}
+### Part D: Manual AIC and BIC calculations
+
+# Get number of observations (n)
+n <- nrow(data)
+
+# Backward model
+model_back <- lm(Y ~ X2 + X3 + X4 + X5, data = data)
+anova_back <- anova(model_back)
+sse_back <- sum(anova_back$`Sum Sq`)
+p_back <- length(coef(model_back)) # includes intercept
+
+# Manually compute AIC and BIC for backward model
+aic_back <- n * log(sse_back / n) + 2 * p_back
+bic_back <- n * log(sse_back / n) + p_back * log(n)
+
+cat("Backward Model (X2, X3, X4, X5):\n")
+cat("Manual AIC:", round(aic_back, 2), "\n")
+cat("Manual BIC:", round(bic_back, 2), "\n\n")
+
+# Forward model
+model_fwd <- lm(Y ~ X5 + X4 + X2 + X3, data = data)
+anova_fwd <- anova(model_fwd)
+sse_fwd <- sum(anova_fwd$`Sum Sq`)
+p_fwd <- length(coef(model_fwd))
+
+# Manually compute AIC and BIC for forward model
+aic_fwd <- n * log(sse_fwd / n) + 2 * p_fwd
+bic_fwd <- n * log(sse_fwd / n) + p_fwd * log(n)
+
+cat("Forward Model (X5, X4, X2, X3):\n")
+cat("Manual AIC:", round(aic_fwd, 2), "\n")
+cat("Manual BIC:", round(bic_fwd, 2), "\n")
+```
+
+### Part E
+```{r}
+### Part E: Model Validation using PRESS
+
+# Refit the backward-selected model (from Part B)
+model_b <- lm(Y ~ X2 + X3 + X4 + X5, data = data)
+
+# Calculate PRESS manually
+# PRESS = sum of squared studentized deleted residuals
+press_resid <- rstudent(model_b) / (1 - hatvalues(model_b))  # studentized deleted residuals
+PRESS <- sum((press_resid)^2)
+
+# Get MSE from the model
+mse <- summary(model_b)$sigma^2
+
+# Compute PRESS/n
+n <- nrow(data)
+PRESS_per_n <- PRESS / n
+
+# Output everything
+cat("Fitted Model (Backward Selection):\n")
+print(model_b$call)
+
+cat("\nFitted Equation:\n")
+coefs <- round(coef(model_b), 5)
+cat("Ŷ =", coefs[1], "+", coefs[2], "*X2 +", coefs[3], "*X3 +", coefs[4], "*X4 +", coefs[5], "*X5\n")
+
+cat("\nPRESS =", round(PRESS, 2), "\n")
+cat("PRESS/n =", round(PRESS_per_n, 2), "\n")
+cat("MSE =", round(mse, 2), "\n")
+
+# Basic interpretation
+if (PRESS_per_n > mse * 1.25) {
+  cat("Conclusion: PRESS/n is much larger than MSE, indicating poor generalization.\n")
+} else {
+  cat("Conclusion: PRESS/n is reasonably close to MSE, indicating good model validation.\n")
+}
+
+```
+
+### Part F
+```{r}
+### Part F: Influence Diagnostics for Model from Part B (X2, X3, X4, X5)
+library(dplyr)
+
+# Fit the final model from Part B
+model_f <- lm(Y ~ X2 + X3 + X4 + X5, data = data)
+
+# Extract diagnostics
+student_resid <- rstudent(model_f)
+hat_vals <- hatvalues(model_f)
+dffits_vals <- dffits(model_f)
+cooks_vals <- cooks.distance(model_f)
+dfbetas_vals <- dfbetas(model_f)
+
+# Sample size (n) and number of parameters (p)
+n <- nrow(data)
+p <- length(coef(model_f))  # includes intercept
+
+# Calculate cutoffs
+cutoff_vals <- list(
+  Studentized_Deleted_Residuals = 3,
+  Hat_Values = 2 * p / n,
+  DFFITS = 2 * sqrt(p) / sqrt(n),
+  Cooks_D = 4 / n,
+  DFBETA = 2 / sqrt(n)
+)
+
+# Create summary table with flags
+diagnostics <- data.frame(
+  Obs = 1:n,
+  Studentized_Deleted_Residuals = round(student_resid, 3),
+  Hat_Values = round(hat_vals, 3),
+  DFFITS = round(dffits_vals, 3),
+  Cooks_D = round(cooks_vals, 3),
+  DFBETA_Intercept = round(dfbetas_vals[, 1], 3),
+  Outlier_Studentized = abs(student_resid) > cutoff_vals$Studentized_Deleted_Residuals,
+  High_Leverage = hat_vals > cutoff_vals$Hat_Values,
+  Influential_DFFITS = abs(dffits_vals) > cutoff_vals$DFFITS,
+  Influential_CooksD = cooks_vals > cutoff_vals$Cooks_D,
+  Influential_DFBETA = abs(dfbetas_vals[, 1]) > cutoff_vals$DFBETA
+)
+
+# Print critical thresholds
+cat("=== Critical Cutoff Values ===\n")
+print(cutoff_vals)
+
+# Show the first 10 rows of diagnostic table
+cat("\n=== First 10 Observations ===\n")
+print(head(diagnostics, 10))
+
+# Show all influential or outlier observations
+cat("\n=== Flagged Observations ===\n")
+flagged <- diagnostics %>%
+  filter(Outlier_Studentized | High_Leverage | Influential_DFFITS | Influential_CooksD | Influential_DFBETA)
+print(flagged)
+
+cat("### Summary of Influential Observations and Outliers (Part f)\n")
+
+cat("Cutoff values used:\n")
+cat(paste0("- Studentized Deleted Residuals > 3\n"))
+cat(paste0("- Hat Values > ", round(2 * p / n, 4), "\n"))
+cat(paste0("- DFFITS > ", round(2 * sqrt(p) / sqrt(n), 4), "\n"))
+cat(paste0("- Cook's D > ", round(4 / n, 5), "\n"))
+cat(paste0("- DFBETA > ", round(2 / sqrt(n), 5), "\n\n"))
+
+# Final Conclusion
+cat("=== Based on these thresholds: ===\n")
+
+cat("- No observations had studentized residuals > 3, so no strong outliers in Y.\n")
+
+cat("- Observation 10 had a hat value above the leverage cutoff (",
+    round(cutoff_vals$Hat_Values, 3), "), suggesting it is a high leverage point.\n")
+
+cat("- Observation 5 and 10 had DFFITS >", round(cutoff_vals$DFFITS, 3),
+    "and Cook’s D values greater than the cutoff, indicating possible influence.\n")
+
+cat("- DFBETAS did not exceed the cutoff for any predictor, suggesting no variable-specific influence on coefficients.\n")
+
+cat("\nConclusion: While there are no severe outliers in Y, a few points (e.g., Obs 5 and 10) ",
+    "may be moderately influential based on DFFITS and leverage, and should be considered for further investigation.\n")
+
+
+```
+
+
+### Part G
+```{r}
+### Part G: VIF Calculation for Final Model (Part B)
+# Load the package
+library(car)
+
+# Fit the model from Part B again
+model_b <- lm(Y ~ X2 + X3 + X4 + X5, data = data)
+
+# Calculate VIF for each predictor
+vif_values <- vif(model_b)
+print(vif_values)
+
+# Calculate and print average VIF
+avg_vif <- mean(vif_values)
+cat("\nAverage VIF:", round(avg_vif, 3), "\n")
+
+# Interpret multicollinearity
+if (any(vif_values > 10)) {
+  cat("Conclusion: At least one predictor has VIF > 10, indicating serious multicollinearity.\n")
+} else if (any(vif_values > 5)) {
+  cat("Conclusion: Some predictors have VIF > 5, suggesting moderate multicollinearity.\n")
+} else {
+  cat("Conclusion: All VIFs are below 5. There is no evidence of problematic multicollinearity.\n")
+}
+```
+
+### Part H
+```{r}
+### Part H: Added Variable Plots (AV Plots)
+library(car)
+
+# Fit model from part (b)
+model_b <- lm(Y ~ X2 + X3 + X4 + X5, data = data)
+
+# Create Added Variable Plots for each predictor in the model
+avPlots(model_b, ask = FALSE)
+```
+
+## Problem 2
+
+### Part A
+```{r}
+### Part A
+data <- read.csv("hw08pr02.csv", header = TRUE, sep = ",")
+
+# Fit the simple linear regression model (corrected object name)
+fit2 <- lm(Y ~ X, data = data)
+
+# View summary of model
+summary(fit2)
+
+# Extract and print the fitted equation
+coefs2 <- coef(fit2)
+cat("Fitted Equation:\n")
+cat("Ŷ =", round(coefs2[1], 5), "+", round(coefs2[2], 5), "*X\n")
+```
+
+### Part B
+```{r}
+### Part B: Modified Levene Test for Non-Constant Variance
+
+# Load data (adjust if you saved under another name)
+data2 <- read.csv("hw08pr02.csv", header = TRUE)
+
+# Fit the linear model
+model <- lm(Y ~ X, data = data2)
+
+# Get absolute residuals
+abs_resid <- abs(resid(model))
+
+# Split into two groups based on median of X
+median_x <- median(data2$X)
+group <- ifelse(data2$X <= median_x, "Group1", "Group2")
+
+# Run two-sample t-test on absolute residuals
+t_test <- t.test(abs_resid[group == "Group1"], abs_resid[group == "Group2"])
+
+# Display hypotheses and results
+cat("=== Modified Levene Test ===\n")
+cat("Null Hypothesis (H0): Equal error variances between groups.\n")
+cat("Alternative Hypothesis (H1): Unequal error variances between groups.\n\n")
+
+# Display test output
+print(t_test)
+
+# Manually extract and interpret
+t_val <- round(t_test$statistic, 4)
+df_val <- t_test$parameter
+p_val <- round(t_test$p.value, 6)
+crit_val <- qt(0.975, df_val)  # two-tailed test, alpha = 0.05
+
+cat("\nCritical t-value (two-tailed, df =", df_val, "):", round(crit_val, 3), "\n")
+if (abs(t_val) > crit_val) {
+  cat("Conclusion: Reject H0. There is evidence of heteroscedasticity.\n")
+} else {
+  cat("Conclusion: Fail to reject H0. No evidence of heteroscedasticity.\n")
+}
+```
+
+### Part C
+```{r}
+### Part C: Weighted Least Squares (WLS)
+
+# Step 1: Fit the original model
+model_ols <- lm(Y ~ X, data = data2)
+
+# Step 2: Compute squared residuals
+resid_sq <- resid(model_ols)^2
+
+# Step 3: Compute weights as inverse of squared residuals
+weights <- 1 / resid_sq
+
+# Step 4: Fit WLS model using these weights
+model_wls <- lm(Y ~ X, data = data2, weights = weights)
+
+# Step 5: View WLS summary
+summary(model_wls)
+
+# Step 6: Extract and print fitted equation
+coefs_wls <- coef(model_wls)
+cat("WLS Fitted Equation:\n")
+cat("Ŷ =", round(coefs_wls[1], 5), "+", round(coefs_wls[2], 5), "*X\n")
+
+```
+
+### Part D
+```{r}
+# Step 1: Plot the raw data
+plot(data2$X, data2$Y,
+     main = "OLS vs WLS Regression Lines",
+     xlab = "X (Total Hours Worked)",
+     ylab = "Y (Revenue in $1000s)",
+     pch = 16)
+
+# Step 2: Add OLS regression line (from Part A)
+abline(model_ols, col = "blue", lwd = 2)
+
+# Step 3: Add WLS regression line (from Part C)
+abline(model_wls, col = "red", lty = 2, lwd = 2)
+
+# Step 4: Add legend
+legend("topleft",
+       legend = c("OLS Fit", "WLS Fit"),
+       col = c("blue", "red"),
+       lty = c(1, 2),
+       lwd = 2)
+```

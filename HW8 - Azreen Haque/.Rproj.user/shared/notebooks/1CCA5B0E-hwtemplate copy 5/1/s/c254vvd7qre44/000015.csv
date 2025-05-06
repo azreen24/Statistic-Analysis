@@ -1,0 +1,7 @@
+"0",""
+"0","# Step 4: Add legend"
+"0","legend(""topleft"","
+"0","       legend = c(""OLS Fit"", ""WLS Fit""),"
+"0","       col = c(""blue"", ""red""),"
+"0","       lty = c(1, 2),"
+"0","       lwd = 2)"

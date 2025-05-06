@@ -1,0 +1,10 @@
+"0",""
+"0","# Print observation"
+"0","cat(""The Q-Q plot for the transformed outcome Y now aligns more closely with the normality assumption. "
+"0","The data points are much closer to the diagonal reference line compared to the original Q-Q plot, "
+"0","suggesting that the transformation helped correct the non-normality issue. "
+"0","There may still be minor deviations in the tails, but overall, normality is significantly improved."")"
+"1","The Q-Q plot for the transformed outcome Y now aligns more closely with the normality assumption. 
+The data points are much closer to the diagonal reference line compared to the original Q-Q plot, 
+suggesting that the transformation helped correct the non-normality issue. 
+There may still be minor deviations in the tails, but overall, normality is significantly improved."

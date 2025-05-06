@@ -1,0 +1,47 @@
+"0","# Extract Sum of Squares values from ANOVA table"
+"0","SSTO <- 13323.500  "
+"0","SSR <- 9041.371 "
+"0","SSE <- 4282.129"
+"0",""
+"0","# Compute R-squared"
+"0","R_squared <- SSR / SSTO"
+"0",""
+"0","# Display result"
+"0","cat(sprintf(""\nR-squared (from ANOVA table) = %.4f\n"", R_squared))"
+"1","
+R-squared (from ANOVA table) = 0.6786
+"
+"0","# Compare with summary(model) R-squared"
+"0","summary_R2 <- summary(model)$r.squared"
+"0","cat(sprintf(""\nR-squared (from model summary) = %.4f\n"", summary_R2))"
+"1","
+R-squared (from model summary) = 0.6786
+"
+"0","# Interpretation"
+"0","cat(""\nInterpretation:\n"")"
+"1","
+Interpretation:
+"
+"0","cat(""\nInterpretation:\n"")"
+"1","
+Interpretation:
+"
+"0","cat(""R-squared represents the proportion of variability in satisfaction\n"")"
+"1","R-squared represents the proportion of variability in satisfaction
+"
+"0","cat(""explained by age, illness, and anxiety.\n"")"
+"1","explained by age, illness, and anxiety.
+"
+"0","cat(sprintf(""With R^2 = %.4f, this means that %.2f%% of the variation in satisfaction\n"", "
+"0","            R_squared, R_squared * 100))"
+"1","With R^2 = 0.6786, this means that 67.86% of the variation in satisfaction
+"
+"0","cat(""is explained by the predictors in the model, while the remaining 32.14%\n"")"
+"1","is explained by the predictors in the model, while the remaining 32.14%
+"
+"0","cat(""is due to other factors not included in the model.\n"")"
+"1","is due to other factors not included in the model.
+"
+"0","cat(""The values from the ANOVA table and model summary should match closely.\n"")"
+"1","The values from the ANOVA table and model summary should match closely.
+"

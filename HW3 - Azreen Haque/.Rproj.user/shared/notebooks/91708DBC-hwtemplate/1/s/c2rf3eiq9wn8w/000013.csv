@@ -1,0 +1,5 @@
+"0","# Apply the transformation to Y"
+"0","data$Y_transformed <- log(data$y)"
+"0",""
+"0","# Generate Q-Q plot for transformed Y"
+"0","qqnorm(data$Y_transformed, main = ""Q-Q Plot of Transformed Outcome Y"")"

@@ -1,0 +1,9 @@
+"0","cat("
+"0","  ""Total models checked in subset selection:\n"","
+"0","  ""For 4 predictors, all possible non-empty subsets = 15\n"""
+"0",")"
+"1","Total models checked in subset selection:
+"
+"1"," "
+"1","For 4 predictors, all possible non-empty subsets = 15
+"

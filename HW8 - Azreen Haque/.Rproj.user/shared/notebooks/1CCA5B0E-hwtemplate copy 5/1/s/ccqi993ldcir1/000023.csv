@@ -1,0 +1,56 @@
+"0",""
+"0","cat(""### Summary of Influential Observations and Outliers (Part f)\n"")"
+"1","### Summary of Influential Observations and Outliers (Part f)
+"
+"0","cat(""Cutoff values used:\n"")"
+"1","Cutoff values used:
+"
+"0","cat(paste0(""- Studentized Deleted Residuals > 3\n""))"
+"1","- Studentized Deleted Residuals > 3
+"
+"0","cat(paste0(""- Hat Values > "", round(2 * p / n, 4), ""\n""))"
+"1","- Hat Values > 0.1923
+"
+"0","cat(paste0(""- DFFITS > "", round(2 * sqrt(p) / sqrt(n), 4), ""\n""))"
+"1","- DFFITS > 0.6202
+"
+"0","cat(paste0(""- Cook's D > "", round(4 / n, 5), ""\n""))"
+"1","- Cook's D > 0.07692
+"
+"0","cat(paste0(""- DFBETA > "", round(2 / sqrt(n), 5), ""\n\n""))"
+"1","- DFBETA > 0.27735
+
+"
+"0","# Final Conclusion"
+"0","cat(""=== Based on these thresholds: ===\n"")"
+"1","=== Based on these thresholds: ===
+"
+"0","cat(""- No observations had studentized residuals > 3, so no strong outliers in Y.\n"")"
+"1","- No observations had studentized residuals > 3, so no strong outliers in Y.
+"
+"0","cat(""- Observation 10 had a hat value above the leverage cutoff ("","
+"0","    round(cutoff_vals$Hat_Values, 3), ""), suggesting it is a high leverage point.\n"")"
+"1","- Observation 10 had a hat value above the leverage cutoff ("
+"1"," "
+"1","0.192"
+"1"," "
+"1","), suggesting it is a high leverage point.
+"
+"0","cat(""- Observation 5 and 10 had DFFITS >"", round(cutoff_vals$DFFITS, 3),"
+"0","    ""and Cook’s D values greater than the cutoff, indicating possible influence.\n"")"
+"1","- Observation 5 and 10 had DFFITS >"
+"1"," "
+"1","0.62"
+"1"," "
+"1","and Cook’s D values greater than the cutoff, indicating possible influence.
+"
+"0","cat(""- DFBETAS did not exceed the cutoff for any predictor, suggesting no variable-specific influence on coefficients.\n"")"
+"1","- DFBETAS did not exceed the cutoff for any predictor, suggesting no variable-specific influence on coefficients.
+"
+"0","cat(""\nConclusion: While there are no severe outliers in Y, a few points (e.g., Obs 5 and 10) "","
+"0","    ""may be moderately influential based on DFFITS and leverage, and should be considered for further investigation.\n"")"
+"1","
+Conclusion: While there are no severe outliers in Y, a few points (e.g., Obs 5 and 10) "
+"1"," "
+"1","may be moderately influential based on DFFITS and leverage, and should be considered for further investigation.
+"

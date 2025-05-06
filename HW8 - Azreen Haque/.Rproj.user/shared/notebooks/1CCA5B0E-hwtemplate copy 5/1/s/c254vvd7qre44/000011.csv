@@ -1,0 +1,3 @@
+"0",""
+"0","# Step 2: Add OLS regression line (from Part A)"
+"0","abline(model_ols, col = ""blue"", lwd = 2)"

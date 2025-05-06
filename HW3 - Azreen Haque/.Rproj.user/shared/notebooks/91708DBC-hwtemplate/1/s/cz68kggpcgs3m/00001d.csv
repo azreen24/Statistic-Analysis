@@ -1,0 +1,8 @@
+"0","# Load necessary library"
+"0","library(MASS)"
+"0",""
+"0","# Fit the initial linear model"
+"0","model <- lm(Deflection ~ Area, data = data)"
+"0",""
+"0","# Apply Box-Cox transformation to find optimal lambda"
+"0","boxcox_result <- boxcox(model, lambda = seq(-2, 2, by = 0.1))  # Generates Box-Cox plot"

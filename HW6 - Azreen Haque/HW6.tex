@@ -1,0 +1,80 @@
+\documentclass[12pt]{article}
+ \usepackage[margin=1in]{geometry} 
+\usepackage{amsmath,amsthm,amssymb,amsfonts}
+\usepackage{enumitem, multicol}
+\usepackage{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\bA}{{\bf{A}}}
+\newcommand{\bb}{{\bf{b}}}
+\newcommand{\bB}{{\bf{B}}}
+\newcommand{\bC}{{\bf{C}}}
+\newcommand{\bD}{{\bf{D}}}
+\newcommand{\be}{{\bf{e}}}
+\newcommand{\bH}{{\bf{H}}}
+\newcommand{\bI}{{\bf{I}}}
+\newcommand{\bJ}{{\bf{J}}}
+\newcommand{\bR}{{\bf{R}}}
+\newcommand{\bV}{{\bf{V}}}
+\newcommand{\bU}{{\bf{U}}}
+\newcommand{\bW}{{\bf{W}}}
+\newcommand{\bX}{{\bf{X}}}
+\newcommand{\bY}{{\bf{Y}}}
+\newcommand{\bZ}{{\bf{Z}}}
+\newcommand{\bzero}{{\bf{0}}}
+\newcommand{\bone}{{\bf{1}}}
+\newcommand{\bbeta}{\mbox{\boldmath{$\beta$}}}
+\newcommand{\bepsilon}{\mbox{\boldmath{$\epsilon$}}}
+
+ 
+\newenvironment{problem}[2][Problem]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+%If you want to title your bold things something different just make another thing exactly like this but replace "problem" with the name of the thing you want, like theorem or lemma or whatever
+ 
+\begin{document}
+ 
+%\renewcommand{\qedsymbol}{\filledbox}
+%Good resources for looking up how to do stuff:
+%Binary operators: http://www.access2science.com/latex/Binary.html
+%General help: http://en.wikibooks.org/wiki/LaTeX/Mathematics
+%Or just google stuff
+ 
+\title{Homework \# 6}
+\author{STA 4210}
+\date{Due: Wednesday, March 26}
+\maketitle
+\noindent
+{\it The submission must be typed. Show all work. Print all input and output code if using software to solve. Points will be deducted for insufficient work or missing steps to solving the problems.}\\
+
+\noindent All data files can be found here:
+\begin{center}
+\url{https://people.clas.ufl.edu/dlindberg/sta-4210/}
+\end{center}
+
+
+\begin{problem}{1}
+In a small-scale experimental study of the relation between degree of brand liking \((Y)\) and moisture content \((X_1)\), sweetness \((X_2)\), and calories \((X_3)\) of the product, the data were collected for a sample of 16 observations. 
+\begin{enumerate}[label=(\alph*)]
+\item
+In \verb|R|, create a multiple linear regression \(E(Y_i) = \beta_0 + \beta_1X_{i1} +\beta_2X_{i2}+\beta_3X_{i3}\) and write down the fitted equation using the \verb|summary()| function. Be sure to list the predictors in the order \(X_1,X_2,X_3\).
+\item
+In \verb|R| create an ANOVA table split by predictor using the \verb|anova()| function. Then manually combine the predictors into a single row to create the ANOVA table with sources of Regression, Error, and Total. Label the rows and columns appropriately.
+\item
+From the ANOVA table in (b), conduct an overall F-Test for regression relation manually. State the null and alternative hypotheses, calculate a test statistic using sum of squares, find a critical F-value, state the rejection rule, and state your conclusion. Use a level of significance \(\alpha = 0.05\). 
+\item
+From the ANOVA table in (b), manually calculate the coefficient of multiple determination and the adjusted R-squared using the formulas from chapter 7. Compare these to what's shown on the \verb|summary()| in part (a).
+\item
+Manually conduct separate two-sided \(t\)-tests to test whether each of the individual parameters \(\beta_1,\beta_2,\) and \(\beta_3\) are equal to 0 without using \verb|R|. For each parameter state the null and alternative hypotheses, state the test statistic from the \verb|summary()| in part (a), state the rejection rule, and state your conclusion. Use a level of significance of \(\alpha=0.05\).
+\item 
+Construct individual 95\% confidence intervals for \(\beta_1\), \(\beta_2\), and \(\beta_3\). Then construct confidence intervals for \(\beta_1\), \(\beta_2\), and \(\beta_3\) that hold jointly at 95\% using the Bonferroni Procedure. Compare the widths of the joint confidence intervals to the widths of the individual confidence intervals. Manually compute them using the formulas from Chapter 6, and then compare to \verb|confint()| function in \verb|R|.
+\item 
+Find the following from the \verb|anova()| function in part (b): \(SSR(X_1)\), \(SSR(X_2|X_1)\), \(SSR(X_3|X_1,X_2)\), and \(SSR(X_1,X_2)\) 
+\item Fit a second multiple linear regression model where the order of the predictor variables is rearranged that would allow you to find the following: \(SSR(X_2)\), \(SSR(X_3|X_2)\), \(SSR(X_1|X_2,X_3)\), and \(SSR(X_2,X_3)\). Use the \verb|anova()| function in \verb|R| to determine your results.
+\item Find the following quantities: \(R_1^2\), \(R_2^2\), \(R_3^2\), \(R_{1,2}^2\), \(R_{1,3}^2\), \(R_{1|3}^2\), \(R_{23|1}^2\). Calculate using the formulas from chapter 7. You may need to fit additional regression models.
+\item Conduct a partial \(F\)-test to test whether both \(X_2\) and \(X_3\) can be dropped from the full model containing \(X_1\), \(X_2\), and \(X_3\). State the null and alternative hypotheses, calculate a test statistic using sum of squares, find a critical F-value (you may use \verb|R| for this), state the rejection rule, and state your conclusion. Use a level of significance \(\alpha = 0.05\). 
+\item Conduct a partial \(F\)-test to test whether only \(X_3\) can be dropped from the full model containing \(X_1\), \(X_2\), and \(X_3\). State the null and alternative hypotheses, calculate a test statistic using sum of squares, find a critical F-value (you may use \verb|R| for this), state the rejection rule, and state your conclusion. Use a level of significance \(\alpha = 0.05\). 
+\end{enumerate}
+\end{problem}
+
+\end{document}

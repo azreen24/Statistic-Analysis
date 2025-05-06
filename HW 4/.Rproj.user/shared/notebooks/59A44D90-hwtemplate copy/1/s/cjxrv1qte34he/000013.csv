@@ -1,0 +1,8 @@
+"0",""
+"0","# Comparison"
+"0","cat(""Bonferroni (Part c) produces the widest confidence intervals at every X_h."
+"0","    Individual CIs (Part b) are the narrowest and Working-Hotelling (Part d) produces "
+"0","    slightly narrower intervals than Bonferroni."")"
+"1","Bonferroni (Part c) produces the widest confidence intervals at every X_h.
+    Individual CIs (Part b) are the narrowest and Working-Hotelling (Part d) produces 
+    slightly narrower intervals than Bonferroni."

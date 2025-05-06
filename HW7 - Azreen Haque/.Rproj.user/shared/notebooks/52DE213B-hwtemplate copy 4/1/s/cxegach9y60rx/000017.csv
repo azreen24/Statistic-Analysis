@@ -1,0 +1,56 @@
+"0",""
+"0","cat("
+"0","  ""Model selection summary:\n\n"","
+"0","  "
+"0","  ""Best model by Adjusted R-squared:\n"","
+"0","  ""  Variables: price, discount, rating\n"","
+"0","  ""  Adjusted R² = 0.2074\n\n"","
+"0","  "
+"0","  ""Best model by Mallows' Cp:\n"","
+"0","  ""  Variables: discount, rating\n"","
+"0","  ""  Cp = 3.7385 (closest to p + 1 = 3)\n\n"","
+"0","  "
+"0","  ""Conclusion:\n"","
+"0","  ""  The model with discount and rating has the most favorable Cp,\n"","
+"0","  ""  indicating minimal bias and good fit.\n"","
+"0","  ""  However, the model with price, discount, and rating has the highest\n"","
+"0","  ""  adjusted R² and may explain more variance.\n"""
+"0",")"
+"1","Model selection summary:
+
+"
+"1"," "
+"1","Best model by Adjusted R-squared:
+"
+"1"," "
+"1","  Variables: price, discount, rating
+"
+"1"," "
+"1","  Adjusted R² = 0.2074
+
+"
+"1"," "
+"1","Best model by Mallows' Cp:
+"
+"1"," "
+"1","  Variables: discount, rating
+"
+"1"," "
+"1","  Cp = 3.7385 (closest to p + 1 = 3)
+
+"
+"1"," "
+"1","Conclusion:
+"
+"1"," "
+"1","  The model with discount and rating has the most favorable Cp,
+"
+"1"," "
+"1","  indicating minimal bias and good fit.
+"
+"1"," "
+"1","  However, the model with price, discount, and rating has the highest
+"
+"1"," "
+"1","  adjusted R² and may explain more variance.
+"

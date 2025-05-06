@@ -1,0 +1,6 @@
+"0","# Step 1: Plot the raw data"
+"0","plot(data2$X, data2$Y,"
+"0","     main = ""OLS vs WLS Regression Lines"","
+"0","     xlab = ""X (Total Hours Worked)"","
+"0","     ylab = ""Y (Revenue in $1000s)"","
+"0","     pch = 16)"
